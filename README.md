@@ -1,1 +1,1 @@
-# modestiq_docker
+# modestiq-docker
