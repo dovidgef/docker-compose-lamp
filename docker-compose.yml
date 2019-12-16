@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    image: percona:5.7.26-centos
+    volumes:
+      - ./mysql/dump:/docker-entrypoint-initdb.d
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - db-persistent:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  nginx:
+    image: nginx:1.17.6
+    depends_on:
+      - 'php-fpm'
+    ports:
+      - "7000:80"
+    volumes:
+      - ./www:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
+  php-fpm:
+    build: php
+    volumes:
+      - ./www:/var/www
+    depends_on:
+      - 'db'
+
+volumes:
+  db-persistent:
